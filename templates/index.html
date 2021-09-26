@@ -8,7 +8,7 @@
                         </button>
                 </h2>
 
-                <table id="pager" class="table table-hover table-dark">
+                <table class="table table-hover table-dark">
                     <tr>
                         <th>ID</th>
                         <th>Question</th>
@@ -63,25 +63,25 @@
                     {% endfor %}
                 </table>
             </div>
-            <div id="mymodal " class="modal fade " role="dialog ">
-                <div class="modal-dialog ">
-                    <div class="modal-content ">
-                        <div class="modal-header ">
-                            <h4 class="modal-title ">Add New Question</h4>
+            <div id="mymodal" class="modal fade" role="dialog">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h4 class="modal-title">Add New Question</h4>
                         </div>
-                        <div class="modal-body ">
-                            <form action="{{ url_for( 'addQuestion') }} " method="POST ">
-                                <div class="form-group ">
+                        <div class="modal-body">
+                            <form action="{{ url_for('addQuestion') }}" method="POST">
+                                <div class="form-group">
                                     <label>Question:</label>
-                                    <input type="text " class="form-control " name="question " required="1 ">
+                                    <input type="text" class="form-control" name="question" required="1">
                                 </div>
-                                <div class="form-group ">
-                                    <button class="btn btn-primary " type="submit ">Add Question</button>
+                                <div class="form-group">
+                                    <button class="btn btn-primary" type="submit">Add Question</button>
                                 </div>
                             </form>
                         </div>
-                        <div class="modal-footer ">
-                            <button type="button " class="btn btn-secondary " data-dismiss="modal ">Close</button>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         </div>
                     </div>
                 </div>
