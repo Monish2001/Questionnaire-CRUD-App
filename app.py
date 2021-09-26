@@ -1,20 +1,34 @@
-from types import resolve_bases
 import uuid
-import mongodb
+
 from flask import Flask, render_template, request, url_for, redirect
+
+import mongodb
 
 app = Flask(__name__)
 
 
 @app.route("/")
 def displayQuestion():
+    return redirect("/viewQ/" + str(1))
+
+
+@app.route("/viewQ/<id>/")
+def viewAllQuestion(id=0):
     try:
-        result = mongodb.displayQuestions()
-        return render_template("index.html", questions=list(result))
+        result = mongodb.displayQuestions(int(id))
+        return render_template("index.html", questions=list(result), pre=getPre(int(id)), next=int(id) + 1,
+                               current=int(id), maxPage=10)
     except Exception as ex:
         print("*******************")
         print(ex)
         print("*******************")
+
+
+def getPre(current):
+    if current != 1:
+        return current - 1
+    else:
+        return 1
 
 
 @app.route("/question", methods=["POST"])

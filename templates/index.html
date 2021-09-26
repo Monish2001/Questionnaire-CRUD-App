@@ -1,93 +1,105 @@
 {% extends 'base.html' %} {% include 'header.html' %} {% block title %} Home {% endblock %} {% block body %}
-<div class="container">
-    <div class="row">
-        <div class="col md-12">
-            <div class="jumbotron p-3">
-                <h2><b>Question </b>
-                    <button type="button" class="btn btn-success float-right" data-toggle="modal" data-target="#mymodal">Add New Question
+    <div class="container" style="min-height: 21.5cm">
+        <div class="row">
+            <div class="col md-12">
+                <div class="jumbotron p-3">
+                    <h2><b>Question </b>
+                        <button type="button" class="btn btn-success float-right" data-toggle="modal"
+                                data-target="#mymodal">Add New Question
                         </button>
-                </h2>
+                    </h2>
 
-                <table class="table table-hover table-dark">
-                    <tr>
-                        <th>ID</th>
-                        <th>Question</th>
-                    </tr>
+                    <table class="table table-hover table-dark">
+                        <tr>
+                            <th>ID</th>
+                            <th>Question</th>
+                        </tr>
 
 
-                    {% for row in questions %}
-                    <tr>
-                        <td>{{ row.qid }}</td>
-                        <td>{{ row.question }}</td>
-                        <td>
-                            <a class="btn btn-warning btn-xs" data-toggle="modal" data-target="#modaledit{{ row.qid }}">Edit</a>
-                            <a href=" /question/{{ row.qid }} " class="btn btn-danger btn-xs " data-method="DELETE " onclick="return confirm( 'Are You Sure To Delete ?') ">Delete</a>
-                            <a href="/view-answer/{{ row.qid }} " class="btn btn-success btn-xs ">View Answer</a>
-                        </td>
+                        {% for row in questions %}
+                            <tr>
+                                <td>{{ row.qid }}</td>
+                                <td>{{ row.question }}</td>
+                                <td>
+                                    <a class="btn btn-warning btn-xs" data-toggle="modal" data-target="#modaledit{{ row.qid }}">Edit</a>
+                                    <a href=" /question/{{ row.qid }} " class="btn btn-danger btn-xs " data-method="DELETE " onclick="return confirm( 'Are You Sure To Delete ?') ">Delete</a>
+                                    <a href="/view-answer/{{ row.qid }} " class="btn btn-success btn-xs ">View Answer</a>
+                                </td>
 
-                        {#
-                        <td>#} {##} {#
-                            <form action="{{ url_for( 'updateQuestion') }} " method="POST ">#} {#
-                                <div class="form-group ">#} {# <label>Question:</label>#} {# <input type="text " name="qid " value="{{ row.qid }} ">#} {# <input type="text " class="form-control " name="question " value="{{ row.question }} ">#} {# </div>#} {#
-                                <div class="form-group ">#} {# <button class="btn btn-primary " type="submit ">Update Question#}
-                                {#                                                    </button>#} {# </div>#} {# </form>#} {# </td>#}
-                    </tr>
+                            </tr>
 
-                    <div id="modaledit{{ row.qid }}" class="modal fade">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <h4 class="modal-title">Update Information</h4>
-                                </div>
-                                <div class="modal-body">
-                                    <form action="{{ url_for('updateQuestion') }}" method="POST">
-                                        <div class="form-group">
-                                            <label>Question:</label>
-                                            <input type="text" name="qid" value="{{ row.qid }}" hidden>
-                                            <input type="text" class="form-control" name="question" value="{{ row.question }}">
+                            <div id="modaledit{{ row.qid }}" class="modal fade">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h4 class="modal-title">Update Information</h4>
                                         </div>
-                                        <div class="form-group">
-                                            <button class="btn btn-primary" type="submit">Update Question
+                                        <div class="modal-body">
+                                            <form action="{{ url_for('updateQuestion') }}" method="POST">
+                                                <div class="form-group">
+                                                    <label>Question:</label>
+                                                    <input type="text" name="qid" value="{{ row.qid }}" hidden>
+                                                    <input type="text" class="form-control" name="question"
+                                                           value="{{ row.question }}">
+                                                </div>
+                                                <div class="form-group">
+                                                    <button class="btn btn-primary" type="submit">Update Question
+                                                    </button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close
                                             </button>
                                         </div>
-                                    </form>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close
-                                    </button>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
-                    </div>
 
-                    {% endfor %}
-                </table>
-            </div>
-            <div id="mymodal" class="modal fade" role="dialog">
-                <div class="modal-dialog">
-                    <div class="modal-content">
-                        <div class="modal-header">
-                            <h4 class="modal-title">Add New Question</h4>
-                        </div>
-                        <div class="modal-body">
-                            <form action="{{ url_for('addQuestion') }}" method="POST">
-                                <div class="form-group">
-                                    <label>Question:</label>
-                                    <input type="text" class="form-control" name="question" required="1">
-                                </div>
-                                <div class="form-group">
-                                    <button class="btn btn-primary" type="submit">Add Question</button>
-                                </div>
-                            </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        {% endfor %}
+                    </table>
+                </div>
+                <div id="mymodal" class="modal fade" role="dialog">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h4 class="modal-title">Add New Question</h4>
+                            </div>
+                            <div class="modal-body">
+                                <form action="{{ url_for('addQuestion') }}" method="POST">
+                                    <div class="form-group">
+                                        <label>Question:</label>
+                                        <input type="text" class="form-control" name="question" required="1">
+                                    </div>
+                                    <div class="form-group">
+                                        <button class="btn btn-primary" type="submit">Add Question</button>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-</div>
+
+    <div class="d-flex justify-content-center">
+    <nav aria-label="Page navigation example">
+        <ul class="pagination">
+            <li class="page-item"><a class="page-link" href="/viewQ/{{ pre }}">Previous</a></li>
+            {% for i in range(1, maxPage) %}
+                {% if i == current %}
+                    <li class="page-item active"><a class="page-link" href="/viewQ/{{ i }}">{{ i }}</a></li>
+                {% else %}
+                    <li class="page-item"><a class="page-link" href="/viewQ/{{ i }}">{{ i }}</a></li>
+                {% endif %}
+            {% endfor %}
+            <li class="page-item"><a class="page-link" href="/viewQ/{{ next }}">Next</a></li>
+        </ul>
+    </nav>
+    </div>
 
 {% endblock %}

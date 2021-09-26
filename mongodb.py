@@ -1,5 +1,4 @@
 import pymongo
-from pymongo import MongoClient
 
 try:
     myclient = pymongo.MongoClient("mongodb://localhost:27017/")
@@ -11,8 +10,15 @@ mydb = myclient["questionnaire-app"]
 mycol = mydb["questions"]
 
 
-def displayQuestions():
-    result = mycol.find({}, {"_id": 0, "qid": 1, "question": 1})
+def displayQuestions(id):
+    skipper = 0
+    limit = 10
+    if id != 1:
+        skipper = (id - 1) * limit
+
+    # mycol.find().skip(skipper).limit(limit)
+
+    result = mycol.find({}, {"_id": 0, "qid": 1, "question": 1}).skip(skipper).limit(limit)
     return result
 
 
