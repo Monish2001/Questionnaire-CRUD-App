@@ -1,0 +1,27 @@
+<div id="modaledit{{ row.answerid }}" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h4 class="modal-title">Update Information</h4>
+            </div>
+            <div class="modal-body">
+                <form action="{{ url_for('updateanswer') }}" method="POST">
+                    <div class="form-group">
+                        <label>Question:</label>
+                        <input type="text" hidden name="qid" value="{{ answers.qid }}">
+                        <input type="text" hidden name="aid" value="{{ row.answerid }}">
+                        <input type="text" class="form-control" name="answer" value="{{ row.answer }}">
+                    </div>
+                    <div class="form-group">
+                        <button class="btn btn-primary" type="submit">Update Answer
+                                </button>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close
+                        </button>
+            </div>
+        </div>
+    </div>
+</div>

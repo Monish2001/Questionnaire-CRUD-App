@@ -74,7 +74,7 @@ def deleteQuestion(id):
         print("*******************")
 
 
-@app.route("/view-answer/<qid>/", methods=["GET", "POST"])
+@app.route("/answer/<qid>/", methods=["GET"])
 def ViewAnswer(qid):
     try:
         return redirect("/viewAns/" + qid + "/" + str(1))
@@ -84,7 +84,7 @@ def ViewAnswer(qid):
         print("*******************")
 
 
-@app.route("/viewAns/<qid>/<pid>/")
+@app.route("/viewAns/<qid>/<pid>/", methods=["GET"])
 def displayPaginateAnswer(qid, pid):
     try:
         result = mongodb.displayAnswer(qid, int(pid))
@@ -105,7 +105,7 @@ def displayPaginateAnswer(qid, pid):
         print("*******************")
 
 
-@app.route("/insertanswer", methods=["POST"])
+@app.route("/answer", methods=["POST"])
 def insertanswer():
     try:
         if request.method == "POST":
@@ -115,7 +115,7 @@ def insertanswer():
             answerObj = {"qid": qid, "answerid": aid, "answer": answer}
             mongodb.addAnswer(answerObj)
 
-            return redirect("/view-answer/" + qid)
+            return redirect("/answer/" + qid)
     except Exception as ex:
         print("*******************")
         print(ex)
@@ -132,19 +132,19 @@ def updateanswer():
             answerDict = {"qid": qid, "answerid": aid, "answer": answer}
             mongodb.updateAnswer(answerDict)
 
-            return redirect("/view-answer/" + qid)
+            return redirect("/answer/" + qid)
     except Exception as ex:
         print("*******************")
         print(ex)
         print("*******************")
 
 
-@app.route("/delete-a/<qid>/<aid>/", methods=["GET", "POST"])
+@app.route("/answer/<qid>/<aid>/", methods=["GET", "DELETE"])
 def deleteAnswer(qid, aid):
     try:
         answerDict = {"qid": qid, "answerid": aid}
         mongodb.deleteAnswer(answerDict)
-        return redirect("/view-answer/" + qid)
+        return redirect("/answer/" + qid)
     except Exception as ex:
         print("*******************")
         print(ex)
