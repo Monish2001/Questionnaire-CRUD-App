@@ -1,88 +1,154 @@
 import uuid
-from flask_paginate import Pagination, get_page_parameter
-import pymongo
+
 from flask import Flask, render_template, request, url_for, redirect
 
-try:
-    myclient = pymongo.MongoClient("mongodb://localhost:27017/")
-except:
-    print("ERROR - Cannot connect to DB")
-mydb = myclient["questionnaire-app"]
-mycol = mydb["questions"]
+from utils import util
+
+import mongodb
+
 app = Flask(__name__)
 
 
 @app.route("/")
 def displayQuestion():
-    result = mycol.find({}, {"_id": 0, "qid": 1, "question": 1})
-    return render_template("index.html", questions=list(result))
+    return redirect("/viewQ/" + str(1))
 
 
-@app.route("/view-answer/<id>/", methods=["GET", "POST"])
-def ViewAnswer(id):
-    result = mycol.find({"qid": id}, {"_id": 0, "qid": 1, "question": 1, "ans": 1})
-    return render_template("answers.html", answers=result[0], qid=id)
+@app.route("/viewQ/<pid>/")
+def viewAllQuestion(pid):
+    try:
+        result = mongodb.displayQuestions(int(pid))
+        totalDocuments = mongodb.findTotalDocuments()
+        maxPageCount = int(totalDocuments // 10) + 1
+        return render_template(
+            "index.html",
+            questions=list(result),
+            pre=util.getPre(int(pid)),
+            next=util.getNext(int(pid), maxPageCount),
+            current=int(pid),
+            maxPage=maxPageCount,
+        )
+    except Exception as ex:
+        print("*******************")
+        print(ex)
+        print("*******************")
 
 
 @app.route("/question", methods=["POST"])
 def addQuestion():
-    if request.method == "POST":
-        question = request.form["question"]
-        qid = str(uuid.uuid1())
-        questionDict = {"qid": qid, "question": question, "ans": []}
-        mycol.insert_one(questionDict)
-        return redirect(url_for("displayQuestion"))
-
-
-@app.route("/insertanswer", methods=["POST"])
-def insertanswer():
-    if request.method == "POST":
-        answer = request.form["answer"]
-        qid = request.form["qid"]
-        aid = str(uuid.uuid1())
-        answerObj = {"answerid": aid, "answer": answer}
-
-        mycol.update_one({"qid": qid}, {"$push": {"ans": answerObj}})
-
-        return redirect("/view-answer/" + qid)
-
-
-@app.route("/question/<id>/", methods=["GET", "DELETE"])
-def deleteQuestion(id):
-    mycol.delete_one({"qid": id})
-    return redirect(url_for("displayQuestion"))
-
-
-@app.route("/delete-a/<qid>/<aid>/", methods=["GET", "POST"])
-def deleteAnswer(qid, aid):
-    mycol.update_one({"qid": qid}, {"$pull": {"ans": {"answerid": aid}}})
-    return redirect("/view-answer/" + qid)
+    try:
+        if request.method == "POST":
+            question = request.form["question"]
+            qid = str(uuid.uuid1())
+            questionDict = {"qid": qid, "question": question, "ans": []}
+            mongodb.addQuestion(questionDict)
+            return redirect(url_for("displayQuestion"))
+    except Exception as ex:
+        print("*******************")
+        print(ex)
+        print("*******************")
 
 
 @app.route("/update", methods=["GET", "POST"])
 def updateQuestion():
-    if request.method == "POST":
-        print(request.form["qid"])
-        mycol.update_one(
-            {"qid": request.form["qid"]},
-            {"$set": {"question": request.form["question"]}},
-        )
+    try:
+        if request.method == "POST":
+            qid = request.form["qid"]
+            question = request.form["question"]
+            mongodb.updateQuestion(qid, question)
+            return redirect(url_for("displayQuestion"))
+    except Exception as ex:
+        print("*******************")
+        print(ex)
+        print("*******************")
+
+
+@app.route("/question/<id>/", methods=["GET", "DELETE"])
+def deleteQuestion(id):
+    try:
+        mongodb.deleteQuestion(id)
         return redirect(url_for("displayQuestion"))
+    except Exception as ex:
+        print("*******************")
+        print(ex)
+        print("*******************")
+
+
+@app.route("/answer/<qid>/", methods=["GET"])
+def ViewAnswer(qid):
+    try:
+        return redirect("/viewAns/" + qid + "/" + str(1))
+    except Exception as ex:
+        print("*******************")
+        print(ex)
+        print("*******************")
+
+
+@app.route("/viewAns/<qid>/<pid>/", methods=["GET"])
+def displayPaginateAnswer(qid, pid):
+    try:
+        result = mongodb.displayAnswer(qid, int(pid))
+        totalDocuments = mongodb.findTotalAnsDocuments(qid)
+        maxPageCount = int(totalDocuments // 10) + 1
+        return render_template(
+            "answers.html",
+            answers=result[0],
+            qid=qid,
+            pre=util.getPre(int(pid)),
+            next=util.getNext(int(pid), maxPageCount),
+            current=int(pid),
+            maxPage=maxPageCount,
+        )
+    except Exception as ex:
+        print("*******************")
+        print(ex)
+        print("*******************")
+
+
+@app.route("/answer", methods=["POST"])
+def insertanswer():
+    try:
+        if request.method == "POST":
+            answer = request.form["answer"]
+            qid = request.form["qid"]
+            aid = str(uuid.uuid1())
+            answerObj = {"qid": qid, "answerid": aid, "answer": answer}
+            mongodb.addAnswer(answerObj)
+
+            return redirect("/answer/" + qid)
+    except Exception as ex:
+        print("*******************")
+        print(ex)
+        print("*******************")
 
 
 @app.route("/updateanswer", methods=["GET", "POST"])
 def updateanswer():
-    if request.method == "POST":
-        qid = request.form["qid"]
-        aid = request.form["aid"]
-        answer = request.form["answer"]
-        print(qid)
-        print(aid)
-        print(answer)
+    try:
+        if request.method == "POST":
+            qid = request.form["qid"]
+            aid = request.form["aid"]
+            answer = request.form["answer"]
+            answerDict = {"qid": qid, "answerid": aid, "answer": answer}
+            mongodb.updateAnswer(answerDict)
 
-        # mycol.update_one({"qid": request.form['qid']}, {"$set": {"question": request.form['question']}})
+            return redirect("/answer/" + qid)
+    except Exception as ex:
+        print("*******************")
+        print(ex)
+        print("*******************")
 
-        return redirect("/view-answer/" + qid)
+
+@app.route("/answer/<qid>/<aid>/", methods=["GET", "DELETE"])
+def deleteAnswer(qid, aid):
+    try:
+        answerDict = {"qid": qid, "answerid": aid}
+        mongodb.deleteAnswer(answerDict)
+        return redirect("/answer/" + qid)
+    except Exception as ex:
+        print("*******************")
+        print(ex)
+        print("*******************")
 
 
 if __name__ == "__main__":
