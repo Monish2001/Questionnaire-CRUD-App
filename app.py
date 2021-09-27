@@ -2,6 +2,8 @@ import uuid
 
 from flask import Flask, render_template, request, url_for, redirect
 
+from utils import util
+
 import mongodb
 
 app = Flask(__name__)
@@ -12,23 +14,24 @@ def displayQuestion():
     return redirect("/viewQ/" + str(1))
 
 
-@app.route("/viewQ/<id>/")
-def viewAllQuestion(id=0):
+@app.route("/viewQ/<pid>/")
+def viewAllQuestion(pid):
     try:
-        result = mongodb.displayQuestions(int(id))
-        return render_template("index.html", questions=list(result), pre=getPre(int(id)), next=int(id) + 1,
-                               current=int(id), maxPage=10)
+        result = mongodb.displayQuestions(int(pid))
+        totalDocuments = mongodb.findTotalDocuments()
+        maxPageCount = int(totalDocuments // 10) + 1
+        return render_template(
+            "index.html",
+            questions=list(result),
+            pre=util.getPre(int(pid)),
+            next=util.getNext(int(pid), maxPageCount),
+            current=int(pid),
+            maxPage=maxPageCount,
+        )
     except Exception as ex:
         print("*******************")
         print(ex)
         print("*******************")
-
-
-def getPre(current):
-    if current != 1:
-        return current - 1
-    else:
-        return 1
 
 
 @app.route("/question", methods=["POST"])
@@ -74,8 +77,28 @@ def deleteQuestion(id):
 @app.route("/view-answer/<qid>/", methods=["GET", "POST"])
 def ViewAnswer(qid):
     try:
-        result = mongodb.displayAnswer(qid)
-        return render_template("answers.html", answers=result[0], qid=qid)
+        return redirect("/viewAns/" + qid + "/" + str(1))
+    except Exception as ex:
+        print("*******************")
+        print(ex)
+        print("*******************")
+
+
+@app.route("/viewAns/<qid>/<pid>/")
+def displayPaginateAnswer(qid, pid):
+    try:
+        result = mongodb.displayAnswer(qid, int(pid))
+        totalDocuments = mongodb.findTotalAnsDocuments(qid)
+        maxPageCount = int(totalDocuments // 10) + 1
+        return render_template(
+            "answers.html",
+            answers=result[0],
+            qid=qid,
+            pre=util.getPre(int(pid)),
+            next=util.getNext(int(pid), maxPageCount),
+            current=int(pid),
+            maxPage=maxPageCount,
+        )
     except Exception as ex:
         print("*******************")
         print(ex)
